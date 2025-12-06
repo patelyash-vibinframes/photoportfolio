@@ -5,7 +5,8 @@
     <title>Yash Patel | Photography Portfolio</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" href="style.css?v=4" />
+    <!-- bump version so phones grab new CSS -->
+    <link rel="stylesheet" href="style.css?v=6" />
   </head>
   <body>
     <!-- Blurred background that follows the current image -->
@@ -17,22 +18,22 @@
     <main class="layout">
       <section class="hero">
         <div class="hero-image-frame">
-          <!-- Main hero image that cycles through your photos -->
-          <img id="hero-image" alt="Photograph by Yash Patel" />
+          <!-- HORIZONTAL SCROLL REEL (new) -->
+          <div class="image-reel" id="image-reel"></div>
 
-          <!-- Name card (floating window, top-left) -->
+          <!-- Name card -->
           <div class="name-card">
             <div class="name-card-header">
               FUJIFILM X-T200 &bull; PIXEL 9 &bull; ONEPLUS 9R
             </div>
             <h1 class="name-title">YASH PATEL</h1>
             <p class="name-tags">
-              STREET &bull; NIGHT &bull; PORTRAITS 
+              STREET &bull; NIGHT &bull; PORTRAITS
             </p>
             <p class="name-sub">Self-taught photographer</p>
           </div>
 
-          <!-- About + contact card (floating window, top-right) -->
+          <!-- About + contact card -->
           <aside class="about-card">
             <h2>ABOUT</h2>
             <p>
@@ -71,7 +72,7 @@
             </div>
           </aside>
 
-          <!-- Selected work bar (floating, bottom-left) -->
+          <!-- Selected work bar -->
           <button class="selected-bar" type="button">
             <span class="dot"></span>
             <span>SELECTED WORK &bull; 2024–2025</span>
@@ -80,64 +81,76 @@
       </section>
     </main>
 
-    <!-- Simple inline slider: 9 seconds per photo -->
+    <!-- Scroll-based gallery: horizontal reel, no timer -->
     <script>
-  // Your image list (keep this exactly like you have it, just update names if needed)
-  const imagePaths = [
-    "images/DSCF4641.JPG",
-    "images/DSCF4645.JPG",
-    "images/DSCF4648.JPG",
-    "images/DSCF4661.JPG",
-    "images/DSCF4674.JPG",
-    "images/DSCF4705.JPG",
-    "images/DSCF4715.JPG",
-    "images/A.JPG",
-  ];
+      // Your image list. Just add/remove lines here when you change photos.
+      const imagePaths = [
+        "images/DSCF4641.JPG",
+        "images/DSCF4645.JPG",
+        "images/DSCF4648.JPG",
+        "images/DSCF4661.JPG",
+        "images/DSCF4674.JPG",
+        "images/DSCF4705.JPG",
+        "images/DSCF4715.JPG",
+        "images/A.JPG",
+      ];
 
-  const heroImage = document.getElementById("hero-image");
-  const bgImage = document.getElementById("bg-image");
+      const reel = document.getElementById("image-reel");
+      const bgImage = document.getElementById("bg-image");
 
-  let currentIndex = 0;
-  let firstLoad = true;
+      if (reel && bgImage && imagePaths.length > 0) {
+        // Build the horizontal reel
+        imagePaths.forEach((src, index) => {
+          const img = document.createElement("img");
+          img.src = src;
+          img.alt = `Photograph by Yash Patel ${index + 1}`;
+          img.className = "reel-image";
+          reel.appendChild(img);
+        });
 
-  function setImages(src) {
-    heroImage.src = src;
-    bgImage.src = src;
-  }
+        // Set initial blurred background
+        bgImage.src = imagePaths[0];
+        bgImage.dataset.currentSrc = imagePaths[0];
 
-  function showImage(index) {
-  const src = imagePaths[index];
+        // Update background based on scroll position
+        function updateBackgroundFromScroll() {
+          const viewWidth = reel.clientWidth;
+          if (!viewWidth) return;
 
-  // First image: just show it (no fade from blank)
-  if (firstLoad) {
-    setImages(src);
-    firstLoad = false;
-    return;
-  }
+          const index = Math.round(reel.scrollLeft / viewWidth);
+          const clamped = Math.max(
+            0,
+            Math.min(imagePaths.length - 1, index)
+          );
+          const newSrc = imagePaths[clamped];
 
-  // Gently dim instead of going to full black
-  heroImage.style.opacity = 0.4;
-  bgImage.style.opacity = 0.5;
+          if (newSrc && bgImage.dataset.currentSrc !== newSrc) {
+            bgImage.src = newSrc;
+            bgImage.dataset.currentSrc = newSrc;
+          }
+        }
 
-  // After a short delay, swap and fade back up
-  setTimeout(() => {
-    setImages(src);
-    heroImage.style.opacity = 1;
-    bgImage.style.opacity = 0.7;
-  }, 250); // you can try 250–400 ms
-}
+        let rafId = null;
+        reel.addEventListener("scroll", () => {
+          if (rafId) return;
+          rafId = requestAnimationFrame(() => {
+            rafId = null;
+            updateBackgroundFromScroll();
+          });
+        });
 
-  if (imagePaths.length > 0) {
-    showImage(0); // show first image immediately
-
-  // Change photo every 12 seconds
-setInterval(() => {
-  currentIndex = (currentIndex + 1) % imagePaths.length;
-  showImage(currentIndex);
-}, 8000);
-
-  }
-</script>
+        // Convert vertical mouse wheel to horizontal scroll (desktop)
+        reel.addEventListener(
+          "wheel",
+          (event) => {
+            if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
+              event.preventDefault();
+              reel.scrollLeft += event.deltaY;
+            }
+          },
+          { passive: false }
+        );
+      }
+    </script>
   </body>
 </html>
-

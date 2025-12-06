@@ -56,13 +56,13 @@ body {
   justify-content: center;
 }
 
-/* --- Hero & reel ------------------------------------------------------ */
+/* --- Hero ------------------------------------------------------------- */
 .hero {
   position: relative;
   width: min(92vw, 1200px);
 }
 
-/* Image container: no frame, image controls height */
+/* Container for reel + floating cards */
 .hero-image-frame {
   position: relative;
   width: 100%;
@@ -73,20 +73,34 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: visible;
+  overflow: hidden;
 }
 
-/* Main image: scales to screen, keeps aspect ratio, fades */
-.hero-image-frame img {
-  max-width: 100%;
-  max-height: calc(100vh - 180px);
-  width: auto;
-  height: auto;
-  display: block;
-  border-radius: 0;
+/* --- Horizontal image reel ------------------------------------------- */
+.image-reel {
+  position: relative;
+  width: 100%;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
 
-  opacity: 1;
-  transition: opacity 1.2s ease-in-out;
+.image-reel::-webkit-scrollbar {
+  display: none;
+}
+
+/* Each image fills the frame width, keeps aspect ratio */
+.reel-image {
+  flex: 0 0 100%;
+  width: 100%;
+  height: auto;
+  max-height: calc(100vh - 180px);
+  object-fit: contain;
+  display: block;
+  scroll-snap-align: center;
 }
 
 /* --- Name card (floating window) ------------------------------------- */
@@ -245,7 +259,7 @@ body {
     width: 100%;
   }
 
-  /* Turn the hero-image-frame into a vertical stack container */
+  /* Stack everything vertically inside the hero frame */
   .hero-image-frame {
     position: static;
     width: 100%;
@@ -259,7 +273,7 @@ body {
     gap: 0.8rem;
   }
 
-  /* All cards become normal blocks, not floating */
+  /* Cards become normal blocks */
   .name-card,
   .selected-bar,
   .about-card {
@@ -274,19 +288,18 @@ body {
     backdrop-filter: blur(18px);
   }
 
-  /* Order inside hero-image-frame:
-     1 = name, 2 = image, 3 = selected bar, 4 = about */
+  /* Order: name → reel → selected bar → about */
   .name-card {
     order: 1;
   }
 
-  .hero-image-frame img {
+  .image-reel {
     order: 2;
     width: 100%;
-    height: auto;
-    max-height: none;       /* let aspect ratio be natural */
-    border-radius: 0;
-    display: block;
+  }
+
+  .reel-image {
+    max-height: none;
   }
 
   .selected-bar {
