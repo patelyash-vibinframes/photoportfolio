@@ -235,7 +235,7 @@ body {
 
 /* --- Responsive: phones & small tablets ------------------------------- */
 /* Adjust layout + resize floating windows to fit the screen nicely      */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .layout {
     padding: 1.6rem 1rem 2rem;
     align-items: flex-start;
