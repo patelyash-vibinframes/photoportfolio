@@ -62,46 +62,45 @@ body {
   width: min(92vw, 1200px);
 }
 
-/* Image container: no border, no shadow; lets image size itself */
+/* Image container: no frame, image controls height */
 .hero-image-frame {
   position: relative;
   width: 100%;
   padding: 0;
   background: transparent;
   border: none;
-  box-shadow: none;                /* ⬅ no window shadow */
+  box-shadow: none;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: visible;
 }
 
-/* Image always keeps aspect ratio, scales to fit screen */
+/* Main image: scales to screen, keeps aspect ratio, fades */
 .hero-image-frame img {
   max-width: 100%;
-  max-height: calc(100vh - 180px); /* fit inside viewport height */
+  max-height: calc(100vh - 180px);
   width: auto;
   height: auto;
   display: block;
   border-radius: 0;
 
-  /* NEW: smooth fade */
   opacity: 1;
   transition: opacity 0.6s ease-in-out;
 }
 
-/* --- Name card (top-left floating window) ----------------------------- */
+/* --- Name card (floating window) ------------------------------------- */
 .name-card {
   position: absolute;
   top: 1.6rem;
   left: 1.6rem;
-  max-width: 260px;
-  padding: 0.9rem 1rem;
-  background: rgba(4, 8, 18, 0.4);          /* more transparent */
+  max-width: 280px;
+  padding: 1rem 1.1rem;
+  background: rgba(4, 8, 18, 0.45);
   border-radius: 0;
   border: 1px solid rgba(255, 255, 255, 0.16);
   backdrop-filter: blur(18px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); /* softer shadow */
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
 }
 
 .name-card-header {
@@ -132,13 +131,13 @@ body {
   color: rgba(225, 231, 255, 0.86);
 }
 
-/* --- Selected work bar (bottom-left) ---------------------------------- */
+/* --- Selected work bar ----------------------------------------------- */
 .selected-bar {
   position: absolute;
   left: 1.6rem;
   bottom: 1.6rem;
   border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(4, 8, 18, 0.4);          /* more transparent */
+  background: rgba(4, 8, 18, 0.4);
   border-radius: 0;
   padding: 0.4rem 0.9rem;
   display: inline-flex;
@@ -150,7 +149,7 @@ body {
   color: rgba(225, 231, 255, 0.88);
   cursor: default;
   backdrop-filter: blur(18px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4); /* softer shadow */
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
 }
 
 .selected-bar .dot {
@@ -160,18 +159,18 @@ body {
   background: #2df47d;
 }
 
-/* --- About & contact floating card (top-right) ------------------------ */
+/* --- About card ------------------------------------------------------- */
 .about-card {
   position: absolute;
   top: 1.6rem;
   right: 1.6rem;
-  width: 260px;
-  padding: 0.9rem 1rem;
-  background: rgba(4, 8, 18, 0.4);           /* more transparent */
+  width: 280px;
+  padding: 1rem 1.1rem;
+  background: rgba(4, 8, 18, 0.45);
   border-radius: 0;
   border: 1px solid rgba(255, 255, 255, 0.16);
   backdrop-filter: blur(18px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); /* softer shadow */
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
 }
 
 .about-card h2,
@@ -234,13 +233,12 @@ body {
   text-decoration: underline;
 }
 
-/* --- Responsive tweaks ------------------------------------------------ */
-@media (max-width: 900px) {
+/* --- Responsive: phones & small tablets ------------------------------- */
+/* Adjust layout + resize floating windows to fit the screen nicely      */
+@media (max-width: 768px) {
   .layout {
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 2.5rem 4vw 3rem;
+    padding: 1.6rem 1rem 2rem;
+    align-items: flex-start;
   }
 
   .hero {
@@ -248,19 +246,74 @@ body {
   }
 
   .hero-image-frame {
-    max-height: none;
+    display: block;
   }
 
+  /* Image: a bit taller allowance since cards overlap */
+  .hero-image-frame img {
+    max-height: calc(100vh - 140px);
+    margin: 0 auto;
+  }
+
+  /* Center the floating windows over the image and shrink them */
   .name-card,
+  .about-card,
+  .selected-bar {
+    max-width: calc(100% - 2rem);
+    width: calc(100% - 2rem);
+    padding: 0.75rem 0.9rem;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  }
+
+  .name-card {
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
   .about-card {
-    position: static;
-    max-width: 100%;
-    width: 100%;
-    margin-bottom: 0.75rem;
+    top: auto;
+    bottom: 4.6rem; /* sit above selected bar */
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
   }
 
   .selected-bar {
-    position: static;
-    margin-top: 0.75rem;
+    left: 50%;
+    bottom: 1rem;
+    transform: translateX(-50%);
+    justify-content: center;
+  }
+
+  /* Smaller type so everything feels balanced on a phone */
+  .name-card-header {
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+  }
+
+  .name-title {
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+  }
+
+  .name-tags {
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+  }
+
+  .name-sub {
+    font-size: 0.7rem;
+  }
+
+  .about-card h2,
+  .about-card h3 {
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+  }
+
+  .about-card p,
+  .contact-row a {
+    font-size: 0.7rem;
   }
 }
