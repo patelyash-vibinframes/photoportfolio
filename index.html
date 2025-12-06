@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- bump version so phones grab new CSS -->
-    <link rel="stylesheet" href="style.css?v=6" />
+    <link rel="stylesheet" href="style.css?v=7" />
   </head>
   <body>
     <!-- Blurred background that follows the current image -->
@@ -18,8 +18,30 @@
     <main class="layout">
       <section class="hero">
         <div class="hero-image-frame">
-          <!-- HORIZONTAL SCROLL REEL (new) -->
+          <!-- HORIZONTAL SCROLL REEL -->
           <div class="image-reel" id="image-reel"></div>
+
+          <!-- swipe / scroll hint -->
+          <div class="reel-hint">
+            <span class="reel-hint-text">Scroll / swipe</span>
+            <span class="reel-hint-arrow">→</span>
+          </div>
+
+          <!-- Left / right arrows -->
+          <button
+            class="reel-arrow reel-arrow-left"
+            type="button"
+            aria-label="Previous image"
+          >
+            ‹
+          </button>
+          <button
+            class="reel-arrow reel-arrow-right"
+            type="button"
+            aria-label="Next image"
+          >
+            ›
+          </button>
 
           <!-- Name card -->
           <div class="name-card">
@@ -97,6 +119,8 @@
 
       const reel = document.getElementById("image-reel");
       const bgImage = document.getElementById("bg-image");
+      const arrowLeft = document.querySelector(".reel-arrow-left");
+      const arrowRight = document.querySelector(".reel-arrow-right");
 
       if (reel && bgImage && imagePaths.length > 0) {
         // Build the horizontal reel
@@ -108,11 +132,10 @@
           reel.appendChild(img);
         });
 
-        // Set initial blurred background
+        // Initial blurred background
         bgImage.src = imagePaths[0];
         bgImage.dataset.currentSrc = imagePaths[0];
 
-        // Update background based on scroll position
         function updateBackgroundFromScroll() {
           const viewWidth = reel.clientWidth;
           if (!viewWidth) return;
@@ -150,6 +173,23 @@
           },
           { passive: false }
         );
+
+        function scrollByOne(direction) {
+          const viewWidth = reel.clientWidth;
+          if (!viewWidth) return;
+          reel.scrollBy({
+            left: direction * viewWidth,
+            behavior: "smooth",
+          });
+        }
+
+        if (arrowLeft) {
+          arrowLeft.addEventListener("click", () => scrollByOne(-1));
+        }
+
+        if (arrowRight) {
+          arrowRight.addEventListener("click", () => scrollByOne(1));
+        }
       }
     </script>
   </body>
