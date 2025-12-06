@@ -5,11 +5,39 @@
     <title>Yash Patel | Photography Portfolio</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- bump version so phones grab new CSS -->
-    <link rel="stylesheet" href="style.css?v=7" />
+    <!-- Basic SEO -->
+    <meta
+      name="description"
+      content="Street, night and portrait photography Yash Patel (@vibinframes). Selected work 2024–2025."
+    />
+    <meta name="theme-color" content="#020410" />
+
+    <!-- Social preview (update og:url + og:image if you want) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Yash Patel | Photography Portfolio" />
+    <meta
+      property="og:description"
+      content="Selected 2024–2025 work by Yash Patel."
+    />
+    <meta
+      property="og:url"
+      content="https://patelyash-vibinframes.github.io/photoporfolio/"
+    />
+    <!-- Put a 1200x630-ish JPG here later -->
+    <meta property="og:image" content="images/social-preview.jpg" />
+
+    <!-- Favicons (add the actual files later if you want) -->
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Just the list of image paths -->
+    <script src="images_manifest.js"></script>
   </head>
   <body>
-    <!-- Blurred background that follows the current image -->
+    <!-- Blurred background synced to the current image -->
     <div class="page-bg">
       <img id="bg-image" alt="" />
       <div class="bg-overlay"></div>
@@ -17,49 +45,54 @@
 
     <main class="layout">
       <section class="hero">
-        <div class="hero-image-frame">
-          <!-- HORIZONTAL SCROLL REEL -->
-          <div class="image-reel" id="image-reel"></div>
+        <div class="hero-shell">
+          <!-- Scrollable image strip -->
+          <div class="hero-strip-wrapper">
+            <button
+              class="nav-arrow nav-arrow-left"
+              id="arrow-left"
+              type="button"
+              aria-label="Previous photograph"
+            >
+              <span>&larr;</span>
+            </button>
 
-          <!-- swipe / scroll hint -->
-          <div class="reel-hint">
-            <span class="reel-hint-text">Scroll / swipe</span>
-            <span class="reel-hint-arrow">→</span>
+            <div
+              class="image-strip"
+              id="image-strip"
+              aria-label="Selected photographs"
+            >
+              <!-- Slides are injected by main.js -->
+            </div>
+
+            <button
+              class="nav-arrow nav-arrow-right"
+              id="arrow-right"
+              type="button"
+              aria-label="Next photograph"
+            >
+              <span>&rarr;</span>
+            </button>
           </div>
-
-          <!-- Left / right arrows -->
-          <button
-            class="reel-arrow reel-arrow-left"
-            type="button"
-            aria-label="Previous image"
-          >
-            ‹
-          </button>
-          <button
-            class="reel-arrow reel-arrow-right"
-            type="button"
-            aria-label="Next image"
-          >
-            ›
-          </button>
 
           <!-- Name card -->
           <div class="name-card">
             <div class="name-card-header">
-              FUJIFILM X-T200 &bull; PIXEL 9 &bull; ONEPLUS 9R
+              FUJIFILM X-T200 • PIXEL 9 • ONEPLUS 9R
             </div>
             <h1 class="name-title">YASH PATEL</h1>
             <p class="name-tags">
-              STREET &bull; NIGHT &bull; PORTRAITS
+              STREET • NIGHT • PORTRAITS • LANDSCAPES
             </p>
             <p class="name-sub">Self-taught photographer</p>
           </div>
 
-          <!-- About + contact card -->
+          <!-- About / contact -->
           <aside class="about-card">
             <h2>ABOUT</h2>
             <p>
-              Toronto-based everevolving self-taught hobbyist photographer .
+              Toronto-based, hobbyist photographer
+              chasing light..:).
             </p>
 
             <h3>CONTACT</h3>
@@ -97,11 +130,36 @@
           <!-- Selected work bar -->
           <button class="selected-bar" type="button">
             <span class="dot"></span>
-            <span>SELECTED WORK &bull; 2024–2025</span>
+            <span>SELECTED WORK • 2024–2025</span>
           </button>
+
+          <!-- Little “scroll / swipe” hint -->
+          <div class="swipe-hint" id="swipe-hint">
+            SCROLL / SWIPE &rarr;
+          </div>
         </div>
       </section>
     </main>
+
+    <!-- Full-screen lightbox -->
+    <div
+      id="lightbox"
+      class="lightbox hidden"
+      aria-modal="true"
+      role="dialog"
+    >
+      <div class="lightbox-inner">
+        <img
+          id="lightbox-image"
+          alt="Full size photograph by Yash Patel"
+        />
+      </div>
+    </div>
+
+    <script src="main.js"></script>
+  </body>
+</html>
+
 
     <!-- Scroll-based gallery: horizontal reel, no timer -->
     <script>
