@@ -5,7 +5,7 @@
     <title>Yash Patel | Photography Portfolio</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" href="style.css?v=3" />
+    <link rel="stylesheet" href="style.css?v=4" />
   </head>
   <body>
     <!-- Blurred background that follows the current image -->
@@ -130,11 +130,12 @@
   if (imagePaths.length > 0) {
     showImage(0); // show first image immediately
 
-    // Change photo every 3 seconds
-    setInterval(() => {
-      currentIndex = (currentIndex + 1) % imagePaths.length;
-      showImage(currentIndex);
-    }, 3000);
+  // Change photo every 12 seconds
+setInterval(() => {
+  currentIndex = (currentIndex + 1) % imagePaths.length;
+  showImage(currentIndex);
+}, 12000);
+
   }
 </script>
   </body>

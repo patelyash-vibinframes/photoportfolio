@@ -233,95 +233,10 @@ body {
   text-decoration: underline;
 }
 
-/* --- Responsive: phones & small tablets ------------------------------- */
-/* Adjust layout + resize floating windows to fit the screen nicely      */
-@media (max-width: 1024px) {
-  .layout {
-    padding: 1.6rem 1rem 2rem;
-    align-items: flex-start;
-  }
-
-  .hero {
-    width: 100%;
-  }
-
-  .hero-image-frame {
-    display: block;
-  }
-
-  /* Image: a bit taller allowance since cards overlap */
-  .hero-image-frame img {
-    max-height: calc(100vh - 140px);
-    margin: 0 auto;
-  }
-
-  /* Center the floating windows over the image and shrink them */
-  .name-card,
-  .about-card,
-  .selected-bar {
-    max-width: calc(100% - 2rem);
-    width: calc(100% - 2rem);
-    padding: 0.75rem 0.9rem;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
-  }
-
-  .name-card {
-    top: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .about-card {
-    top: auto;
-    bottom: 4.6rem; /* sit above selected bar */
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
-  }
-
-  .selected-bar {
-    left: 50%;
-    bottom: 1rem;
-    transform: translateX(-50%);
-    justify-content: center;
-  }
-
-  /* Smaller type so everything feels balanced on a phone */
-  .name-card-header {
-    font-size: 0.6rem;
-    letter-spacing: 0.16em;
-  }
-
-  .name-title {
-    font-size: 1.1rem;
-    letter-spacing: 0.15em;
-  }
-
-  .name-tags {
-    font-size: 0.6rem;
-    letter-spacing: 0.18em;
-  }
-
-  .name-sub {
-    font-size: 0.7rem;
-  }
-
-  .about-card h2,
-  .about-card h3 {
-    font-size: 0.65rem;
-    letter-spacing: 0.18em;
-  }
-
-  .about-card p,
-  .contact-row a {
-    font-size: 0.7rem;
-  }
-}
-/* --- PHONE LAYOUT: name card → image → selected bar → about card ----- */
+/* --- PHONE LAYOUT: name → image → selected bar → about ---------------- */
 @media (max-width: 768px) {
-  /* Overall spacing */
   .layout {
-    padding: 1.6rem 1rem 2.4rem;
+    padding: 1.4rem 0.9rem 2.6rem;
     align-items: stretch;
     justify-content: flex-start;
   }
@@ -330,32 +245,32 @@ body {
     width: 100%;
   }
 
-  /* Turn the image frame into a vertical stack */
+  /* Turn the hero-image-frame into a vertical stack container */
   .hero-image-frame {
-    position: static;              /* no absolute overlay on phones */
+    position: static;
+    width: 100%;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
     display: flex;
     flex-direction: column;
     align-items: stretch;
     gap: 0.8rem;
-    width: 100%;
-    max-width: none;
-    padding: 0;
-    background: transparent;
-    box-shadow: none;
   }
 
-  /* All three cards stop floating and join the flow */
+  /* All cards become normal blocks, not floating */
   .name-card,
   .selected-bar,
   .about-card {
     position: static;
-    max-width: 100%;
     width: 100%;
+    max-width: 100%;
     border-radius: 14px;
     padding: 0.85rem 1rem;
-    background: rgba(4, 8, 18, 0.55);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(4, 8, 18, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(18px);
   }
 
@@ -369,8 +284,9 @@ body {
     order: 2;
     width: 100%;
     height: auto;
-    max-height: none;
+    max-height: none;       /* let aspect ratio be natural */
     border-radius: 0;
+    display: block;
   }
 
   .selected-bar {
@@ -382,19 +298,19 @@ body {
     order: 4;
   }
 
-  /* Slightly smaller text so it breathes on phone */
+  /* Slightly smaller type for phones */
   .name-card-header {
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     letter-spacing: 0.16em;
   }
 
   .name-title {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     letter-spacing: 0.16em;
   }
 
   .name-tags {
-    font-size: 0.68rem;
+    font-size: 0.62rem;
     letter-spacing: 0.18em;
   }
 
