@@ -1,0 +1,266 @@
+/* --- Base reset ------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: #020410;
+  color: #f7f7ff;
+  overflow-x: hidden;
+}
+
+/* --- Blurred background ----------------------------------------------- */
+.page-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+}
+
+.page-bg img {
+  width: 120%;
+  height: 120%;
+  object-fit: cover;
+  filter: blur(40px) saturate(130%);
+  transform: scale(1.1);
+  opacity: 0.7;
+  transition: opacity 0.6s ease-in-out;
+}
+
+.bg-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top left, rgba(30, 78, 207, 0.55), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(4, 15, 40, 0.85), rgba(1, 2, 8, 0.98));
+  mix-blend-mode: soft-light;
+}
+
+/* --- Layout ----------------------------------------------------------- */
+.layout {
+  min-height: 100vh;
+  padding: 3.5rem 4vw 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- Hero & reel ------------------------------------------------------ */
+.hero {
+  position: relative;
+  width: min(92vw, 1200px);
+}
+
+/* Image container: no border, no shadow; lets image size itself */
+.hero-image-frame {
+  position: relative;
+  width: 100%;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;                /* ⬅ no window shadow */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+/* Image always keeps aspect ratio, scales to fit screen */
+.hero-image-frame img {
+  max-width: 100%;
+  max-height: calc(100vh - 180px); /* fit inside viewport height */
+  width: auto;
+  height: auto;
+  display: block;
+  border-radius: 0;
+
+  /* NEW: smooth fade */
+  opacity: 1;
+  transition: opacity 0.6s ease-in-out;
+}
+
+/* --- Name card (top-left floating window) ----------------------------- */
+.name-card {
+  position: absolute;
+  top: 1.6rem;
+  left: 1.6rem;
+  max-width: 260px;
+  padding: 0.9rem 1rem;
+  background: rgba(4, 8, 18, 0.4);          /* more transparent */
+  border-radius: 0;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); /* softer shadow */
+}
+
+.name-card-header {
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(225, 231, 255, 0.78);
+  margin-bottom: 0.55rem;
+}
+
+.name-title {
+  font-size: 1.4rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 0.55rem;
+}
+
+.name-tags {
+  font-size: 0.65rem;
+  letter-spacing: 0.23em;
+  text-transform: uppercase;
+  color: rgba(225, 231, 255, 0.8);
+  margin-bottom: 0.5rem;
+}
+
+.name-sub {
+  font-size: 0.75rem;
+  color: rgba(225, 231, 255, 0.86);
+}
+
+/* --- Selected work bar (bottom-left) ---------------------------------- */
+.selected-bar {
+  position: absolute;
+  left: 1.6rem;
+  bottom: 1.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(4, 8, 18, 0.4);          /* more transparent */
+  border-radius: 0;
+  padding: 0.4rem 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(225, 231, 255, 0.88);
+  cursor: default;
+  backdrop-filter: blur(18px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4); /* softer shadow */
+}
+
+.selected-bar .dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: #2df47d;
+}
+
+/* --- About & contact floating card (top-right) ------------------------ */
+.about-card {
+  position: absolute;
+  top: 1.6rem;
+  right: 1.6rem;
+  width: 260px;
+  padding: 0.9rem 1rem;
+  background: rgba(4, 8, 18, 0.4);           /* more transparent */
+  border-radius: 0;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); /* softer shadow */
+}
+
+.about-card h2,
+.about-card h3 {
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(225, 231, 255, 0.9);
+  margin-bottom: 0.3rem;
+}
+
+.about-card p {
+  font-size: 0.75rem;
+  color: rgba(225, 231, 255, 0.92);
+  margin-bottom: 0.7rem;
+  line-height: 1.5;
+}
+
+/* Contact rows */
+.contact-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.4rem;
+}
+
+.contact-row .icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contact-row svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: rgba(240, 244, 255, 0.95);
+  stroke-width: 1.6;
+}
+
+.contact-row rect {
+  stroke-linejoin: round;
+}
+
+.contact-row circle,
+.contact-row polyline {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.contact-row a {
+  color: rgba(245, 248, 255, 0.95);
+  text-decoration: none;
+  font-size: 0.75rem;
+}
+
+.contact-row a:hover {
+  text-decoration: underline;
+}
+
+/* --- Responsive tweaks ------------------------------------------------ */
+@media (max-width: 900px) {
+  .layout {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 2.5rem 4vw 3rem;
+  }
+
+  .hero {
+    width: 100%;
+  }
+
+  .hero-image-frame {
+    max-height: none;
+  }
+
+  .name-card,
+  .about-card {
+    position: static;
+    max-width: 100%;
+    width: 100%;
+    margin-bottom: 0.75rem;
+  }
+
+  .selected-bar {
+    position: static;
+    margin-top: 0.75rem;
+  }
+}
