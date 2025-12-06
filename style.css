@@ -317,3 +317,90 @@ body {
     font-size: 0.7rem;
   }
 }
+/* --- PHONE LAYOUT: name card → image → selected bar → about card ----- */
+@media (max-width: 768px) {
+  /* Overall spacing */
+  .layout {
+    padding: 1.6rem 1rem 2.4rem;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
+  .hero {
+    width: 100%;
+  }
+
+  /* Turn the image frame into a vertical stack */
+  .hero-image-frame {
+    position: static;              /* no absolute overlay on phones */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  /* All three cards stop floating and join the flow */
+  .name-card,
+  .selected-bar,
+  .about-card {
+    position: static;
+    max-width: 100%;
+    width: 100%;
+    border-radius: 14px;
+    padding: 0.85rem 1rem;
+    background: rgba(4, 8, 18, 0.55);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(18px);
+  }
+
+  /* Order inside hero-image-frame:
+     1 = name, 2 = image, 3 = selected bar, 4 = about */
+  .name-card {
+    order: 1;
+  }
+
+  .hero-image-frame img {
+    order: 2;
+    width: 100%;
+    height: auto;
+    max-height: none;
+    border-radius: 0;
+  }
+
+  .selected-bar {
+    order: 3;
+    justify-content: center;
+  }
+
+  .about-card {
+    order: 4;
+  }
+
+  /* Slightly smaller text so it breathes on phone */
+  .name-card-header {
+    font-size: 0.65rem;
+    letter-spacing: 0.16em;
+  }
+
+  .name-title {
+    font-size: 1.2rem;
+    letter-spacing: 0.16em;
+  }
+
+  .name-tags {
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+  }
+
+  .name-sub,
+  .about-card p,
+  .contact-row a {
+    font-size: 0.8rem;
+  }
+}
