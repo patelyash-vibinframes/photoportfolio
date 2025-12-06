@@ -106,26 +106,26 @@
   }
 
   function showImage(index) {
-    const src = imagePaths[index];
+  const src = imagePaths[index];
 
-    // First image: just show it (no fade from blank)
-    if (firstLoad) {
-      setImages(src);
-      firstLoad = false;
-      return;
-    }
-
-    // Fade out
-    heroImage.style.opacity = 0;
-    bgImage.style.opacity = 0.2; // keep a little background visible
-
-    // After short delay, swap images and fade back in
-    setTimeout(() => {
-      setImages(src);
-      heroImage.style.opacity = 1;
-      bgImage.style.opacity = 0.7;
-    }, 200); // 200 ms fade-out before fade-in
+  // First image: just show it (no fade from blank)
+  if (firstLoad) {
+    setImages(src);
+    firstLoad = false;
+    return;
   }
+
+  // Gently dim instead of going to full black
+  heroImage.style.opacity = 0.4;
+  bgImage.style.opacity = 0.5;
+
+  // After a short delay, swap and fade back up
+  setTimeout(() => {
+    setImages(src);
+    heroImage.style.opacity = 1;
+    bgImage.style.opacity = 0.7;
+  }, 250); // you can try 250–400 ms
+}
 
   if (imagePaths.length > 0) {
     showImage(0); // show first image immediately
@@ -134,7 +134,7 @@
 setInterval(() => {
   currentIndex = (currentIndex + 1) % imagePaths.length;
   showImage(currentIndex);
-}, 10000);
+}, 8000);
 
   }
 </script>
