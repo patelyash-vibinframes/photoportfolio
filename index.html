@@ -11,7 +11,7 @@
     
     <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
 
-    <link rel="stylesheet" href="style.css?v=11" />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     
@@ -29,12 +29,8 @@
       <div class="corner bottom-left">
         <div class="camera-info">
           <span id="cam-model">LOADING...</span>
-          <span id="cam-lens">--</span>
-          <span>
-            ISO <span id="iso-val">--</span> &bull; 
-            <span id="aperture-val">--</span> &bull; 
-            <span id="shutter-val">--</span>
-          </span>
+          <span id="cam-lens">35MM F/2</span>
+          <span id="stats-row">--</span>
         </div>
       </div>
 
@@ -51,10 +47,13 @@
     </nav>
 
     <main class="gallery-view">
-      <div class="gallery-track" id="track"></div>
+      <div class="gallery-track" id="track">
+        </div>
     </main>
 
     <script>
+      // --- CONFIGURATION ---
+      // Update these filenames to match your folder exactly
       const imageList = [
         "images/A.JPG", "images/A1.JPG", "images/A2.JPG", 
         "images/A3.JPG", "images/A4.JPG", "images/A5.JPG", 
@@ -67,15 +66,13 @@
       const totalSlidesEl = document.getElementById('total-slides');
       const progressFill = document.getElementById('progress-fill');
       
-      // UI Elements for EXIF
       const camModelEl = document.getElementById('cam-model');
-      const isoEl = document.getElementById('iso-val');
-      const apertureEl = document.getElementById('aperture-val');
-      const shutterEl = document.getElementById('shutter-val');
+      const lensEl = document.getElementById('cam-lens');
+      const statsEl = document.getElementById('stats-row');
 
       totalSlidesEl.innerText = imageList.length.toString().padStart(2, '0');
 
-      // 1. Build Gallery
+      // 1. Build the Gallery
       imageList.forEach((src, index) => {
         const wrapper = document.createElement('div');
         wrapper.className = 'image-wrapper';
@@ -83,68 +80,89 @@
         const img = document.createElement('img');
         img.dataset.src = src;
         img.alt = `Photo ${index + 1}`;
+        // Load first image immediately
         if (index === 0) img.src = src;
 
         wrapper.appendChild(img);
         track.appendChild(wrapper);
       });
 
-      // 2. Function to Extract and Display EXIF
-      function updateExifData(imgElement) {
-        // Use the EXIF library
+      // 2. Logic: Fetch Data or Simulate
+      function updateData(imgElement) {
+        // Flash animation
+        const infoBox = document.querySelector('.camera-info');
+        infoBox.classList.add('flash-update');
+
         EXIF.getData(imgElement, function() {
-          // Extract tags
           const model = EXIF.getTag(this, "Model");
           const iso = EXIF.getTag(this, "ISOSpeedRatings");
           const fNumber = EXIF.getTag(this, "FNumber");
           const exposure = EXIF.getTag(this, "ExposureTime");
 
-          // Update DOM with Fallbacks
-          camModelEl.innerText = model ? model : "DIGITAL CAPTURE";
-          isoEl.innerText = iso ? iso : "--";
-          
-          // Format Aperture (e.g., 2.8 -> f/2.8)
-          apertureEl.innerText = fNumber ? `f/${fNumber}` : "--";
+          // Decide: Do we have real data?
+          if (model || iso) {
+             // Real Data Found
+             camModelEl.innerText = model ? model : "DIGITAL CAPTURE";
+             
+             // Format Shutter (often comes as object {numerator, denominator})
+             let shutter = "--";
+             if (exposure) {
+                shutter = (exposure.numerator && exposure.denominator) 
+                  ? `${exposure.numerator}/${exposure.denominator}s` 
+                  : `${exposure}s`;
+             }
 
-          // Format Shutter Speed (Handle fractions if necessary)
-          if (exposure) {
-             // Sometimes it comes as a decimal (0.005), usually libraries handle fraction
-             // If it's a simple number < 1, we might want to convert to fraction manually
-             // But EXIF-JS usually returns the fraction object or string.
-             // We will cast to string for safety.
-             shutterEl.innerText = `${exposure.numerator}/${exposure.denominator}s`;
-          } else {
-             shutterEl.innerText = "--";
-          }
+             // Update the single line
+             statsEl.innerHTML = `ISO ${iso || 400} &bull; f/${fNumber || 2.8} &bull; ${shutter}`;
           
-          // Add a glitch effect class to text to show it updated
-          document.querySelector('.camera-info').classList.add('flash-update');
-          setTimeout(() => document.querySelector('.camera-info').classList.remove('flash-update'), 300);
+          } else {
+             // Fallback: Generate Realistic Simulation
+             simulateTechData();
+          }
+
+          // Remove flash class after animation
+          setTimeout(() => infoBox.classList.remove('flash-update'), 300);
         });
       }
 
-      // 3. Observer
+      function simulateTechData() {
+        const isos = [200, 400, 800, 1600, 3200];
+        const apertures = [1.4, 2.0, 2.8, 4.0, 5.6, 8.0];
+        const shutters = ["1/125s", "1/250s", "1/500s", "1/1000s", "1/60s"];
+
+        camModelEl.innerText = "FUJIFILM X-T200"; // Fallback Model Name
+        lensEl.innerText = "35MM F/2";
+        
+        const rISO = isos[Math.floor(Math.random() * isos.length)];
+        const rAp = apertures[Math.floor(Math.random() * apertures.length)];
+        const rShut = shutters[Math.floor(Math.random() * shutters.length)];
+
+        statsEl.innerHTML = `ISO ${rISO} &bull; f/${rAp} &bull; ${rShut}`;
+      }
+
+      // 3. Observer (Handles Lazy Loading & Triggering Data Update)
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             const img = entry.target.querySelector('img');
             const index = Array.from(track.children).indexOf(entry.target);
 
-            // Lazy Load
             if (img.dataset.src) {
               img.src = img.dataset.src;
               img.removeAttribute('data-src');
               img.onload = () => {
                 img.classList.add('loaded');
-                updateExifData(img); // Read EXIF once loaded
+                updateData(img);
               };
             } else {
-              // If already loaded, just read EXIF
-              updateExifData(img);
+              // Image already loaded, just update stats
+              updateData(img);
             }
 
-            // Update Counters
+            // Update Counter
             currentSlideEl.innerText = (index + 1).toString().padStart(2, '0');
+            
+            // Update Progress Bar
             const progress = ((index + 1) / imageList.length) * 100;
             progressFill.style.width = `${progress}%`;
           }
@@ -153,13 +171,13 @@
 
       document.querySelectorAll('.image-wrapper').forEach(wrap => observer.observe(wrap));
 
-      // Clock
+      // 4. Clock
       setInterval(() => {
         const now = new Date();
         document.getElementById('clock').innerText = now.toLocaleTimeString('en-US', { hour12: false });
       }, 1000);
 
-      // Scroll
+      // 5. Horizontal Scroll fix for Mouse Wheel
       track.addEventListener("wheel", (evt) => {
         if (evt.deltaY !== 0) {
           track.scrollLeft += evt.deltaY;

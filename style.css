@@ -1,8 +1,8 @@
 /* --- RESET & VARIABLES --- */
 :root {
-  --bg-color: #050505;       /* Deep black */
-  --text-color: #f0f0f0;     /* Off-white text */
-  --accent-color: #ffffff;   /* Pure white for highlights */
+  --bg-color: #050505;       /* Deep Black */
+  --text-color: #f0f0f0;     /* Off-White */
+  --accent-color: #ffffff;   /* Pure White */
   --font-tech: 'Space Mono', monospace;
   --padding: 2rem;
 }
@@ -15,7 +15,7 @@ body {
   font-family: var(--font-tech);
   height: 100vh;
   width: 100vw;
-  overflow: hidden; /* Hide main body scroll */
+  overflow: hidden; 
   -webkit-font-smoothing: antialiased;
 }
 
@@ -24,40 +24,30 @@ body {
   position: fixed;
   inset: 0;
   z-index: 100;
-  pointer-events: none; /* Let clicks pass through to gallery */
+  pointer-events: none; /* Let clicks pass through to images */
   padding: var(--padding);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
 }
 
 .corner {
-  pointer-events: auto; /* Re-enable clicks for links */
+  pointer-events: auto; /* Enable clicks on links */
+  position: absolute;
 }
 
-/* Flex containers for top/bottom rows */
-.ui-layer::before, .ui-layer::after {
-  content: ''; 
-  display: none; 
-}
+.top-left { top: var(--padding); left: var(--padding); }
+.top-right { top: var(--padding); right: var(--padding); text-align: right; }
+.bottom-left { bottom: var(--padding); left: var(--padding); }
+.bottom-right { bottom: var(--padding); right: var(--padding); text-align: right; min-width: 120px; }
 
-.top-left, .top-right { position: absolute; top: var(--padding); }
-.bottom-left, .bottom-right { position: absolute; bottom: var(--padding); }
-
-.top-left { left: var(--padding); }
-.top-right { right: var(--padding); text-align: right; }
-.bottom-left { left: var(--padding); }
-.bottom-right { right: var(--padding); text-align: right; min-width: 120px; }
-
-/* Typography Styling */
+/* Typography */
 h1 {
   font-size: 1rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   text-transform: uppercase;
+  margin-bottom: 5px;
 }
 
-.meta, .camera-info span, .time-display, .link-hover {
+.meta, .time-display, .link-hover {
   display: block;
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -69,30 +59,34 @@ h1 {
   color: var(--text-color);
   text-decoration: none;
   border-bottom: 1px solid transparent;
-  transition: opacity 0.2s, border-color 0.2s;
+  transition: opacity 0.2s;
   margin-bottom: 4px;
 }
 .link-hover:hover { opacity: 1; border-bottom-color: var(--text-color); }
 
-/* Tech Styling for EXIF Data */
-.camera-info span::before {
-  content: '├ '; 
-  opacity: 0.5;
+/* --- TECH INFO STYLING (Bottom Left) --- */
+.camera-info > span {
+  display: block; /* Forces Model, Lens, Stats onto separate lines */
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  opacity: 0.7;
+  line-height: 1.6;
 }
-/* The last item gets a different connector */
+
+/* Specific styling for the Decorators */
+.camera-info span::before { content: '├ '; opacity: 0.5; }
 .camera-info span:last-child::before { content: '└ '; }
 
-/* The Flash Effect for Data Updates */
-.camera-info {
-  transition: opacity 0.2s;
+/* The specific fix for your issue: */
+#stats-row {
+  white-space: nowrap; /* Forces ISO • f/2 • 1/500s to stay on ONE line */
 }
 
-.flash-update {
-  opacity: 0.3; /* Text dims briefly when data updates */
-  color: var(--accent-color);
-}
+/* Flash Animation for Updates */
+.camera-info { transition: opacity 0.2s; }
+.flash-update { opacity: 0.3; color: var(--accent-color); }
 
-/* Counter & Progress */
+/* --- COUNTER (Bottom Right) --- */
 .counter {
   font-size: 3rem;
   font-weight: 400;
@@ -102,6 +96,7 @@ h1 {
 .divider { opacity: 0.3; font-size: 1.5rem; vertical-align: middle; }
 #total-slides { font-size: 1rem; opacity: 0.5; }
 
+/* Progress Bar */
 .progress-track {
   width: 100%;
   height: 2px;
@@ -111,11 +106,11 @@ h1 {
 .progress-fill {
   height: 100%;
   background: var(--text-color);
-  width: 0%;
+  width: 0%; /* JS updates this */
   transition: width 0.3s ease-out;
 }
 
-/* --- GALLERY TRACK --- */
+/* --- GALLERY TRACK (Center) --- */
 .gallery-view {
   width: 100%;
   height: 100%;
@@ -132,18 +127,17 @@ h1 {
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   scrollbar-width: none; 
-  -ms-overflow-style: none;
 }
 .gallery-track::-webkit-scrollbar { display: none; }
 
 .image-wrapper {
-  flex: 0 0 100vw; /* Full width per slide */
+  flex: 0 0 100vw;
   height: 100vh;
   scroll-snap-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4rem 2rem; 
+  padding: 4rem 2rem;
 }
 
 .image-wrapper img {
@@ -158,32 +152,17 @@ h1 {
   box-shadow: 0 0 50px rgba(0,0,0,0.5);
 }
 
-/* Reveal animation when loaded */
 .image-wrapper img.loaded {
   opacity: 1;
   transform: scale(1);
 }
 
-/* --- MOBILE OPTIMIZATION --- */
+/* --- MOBILE --- */
 @media (max-width: 768px) {
   :root { --padding: 1.2rem; }
-  
-  .top-right { display: none; } /* Hide clock on mobile */
-  
-  /* On mobile, we keep the bottom-left info but might need to adjust size */
-  .bottom-left {
-    bottom: 5rem; /* Move up slightly so it doesn't hit the bottom edge too hard */
-    font-size: 0.7rem;
-  }
-
-  .image-wrapper {
-    padding: 0;
-  }
-  
-  .image-wrapper img {
-    max-width: 90%;
-    max-height: 60%; 
-  }
-
+  .top-right { display: none; } /* Hide clock */
+  .bottom-left { bottom: 5rem; font-size: 0.7rem; }
+  .image-wrapper { padding: 0; }
+  .image-wrapper img { max-width: 90%; max-height: 60%; }
   .counter { font-size: 2rem; }
 }
