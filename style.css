@@ -1,8 +1,8 @@
 /* --- RESET & VARIABLES --- */
 :root {
-  --bg-color: #050505;
-  --text-color: #f0f0f0;
-  --accent-color: #ffffff;
+  --bg-color: #050505;       /* Deep black */
+  --text-color: #f0f0f0;     /* Off-white text */
+  --accent-color: #ffffff;   /* Pure white for highlights */
   --font-tech: 'Space Mono', monospace;
   --padding: 2rem;
 }
@@ -37,7 +37,7 @@ body {
 
 /* Flex containers for top/bottom rows */
 .ui-layer::before, .ui-layer::after {
-  content: ''; /* Layout helpers */
+  content: ''; 
   display: none; 
 }
 
@@ -74,11 +74,23 @@ h1 {
 }
 .link-hover:hover { opacity: 1; border-bottom-color: var(--text-color); }
 
+/* Tech Styling for EXIF Data */
 .camera-info span::before {
-  content: '├ '; /* ASCII tech styling */
+  content: '├ '; 
   opacity: 0.5;
 }
+/* The last item gets a different connector */
 .camera-info span:last-child::before { content: '└ '; }
+
+/* The Flash Effect for Data Updates */
+.camera-info {
+  transition: opacity 0.2s;
+}
+
+.flash-update {
+  opacity: 0.3; /* Text dims briefly when data updates */
+  color: var(--accent-color);
+}
 
 /* Counter & Progress */
 .counter {
@@ -119,7 +131,6 @@ h1 {
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
-  /* Hide scrollbar */
   scrollbar-width: none; 
   -ms-overflow-style: none;
 }
@@ -132,7 +143,7 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4rem 2rem; /* Space for the UI to not overlap image too much */
+  padding: 4rem 2rem; 
 }
 
 .image-wrapper img {
@@ -144,7 +155,7 @@ h1 {
   opacity: 0;
   transform: scale(0.98);
   transition: opacity 0.8s ease, transform 0.8s ease;
-  box-shadow: 0 0 50px rgba(0,0,0,0.5); /* Deep shadow to separate from dark bg */
+  box-shadow: 0 0 50px rgba(0,0,0,0.5);
 }
 
 /* Reveal animation when loaded */
@@ -157,11 +168,12 @@ h1 {
 @media (max-width: 768px) {
   :root { --padding: 1.2rem; }
   
-  /* Stack UI on mobile */
   .top-right { display: none; } /* Hide clock on mobile */
   
+  /* On mobile, we keep the bottom-left info but might need to adjust size */
   .bottom-left {
-    display: none; /* Hide camera info on mobile to save space */
+    bottom: 5rem; /* Move up slightly so it doesn't hit the bottom edge too hard */
+    font-size: 0.7rem;
   }
 
   .image-wrapper {

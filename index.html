@@ -9,7 +9,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css?v=10" />
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+
+    <link rel="stylesheet" href="style.css?v=11" />
   </head>
   <body>
     
@@ -26,9 +28,13 @@
 
       <div class="corner bottom-left">
         <div class="camera-info">
-          <span>CAM: FUJIFILM X-T200</span>
-          <span>LENS: 35MM F/2</span>
-          <span>ISO: <span id="iso-val">AUTO</span></span>
+          <span id="cam-model">LOADING...</span>
+          <span id="cam-lens">--</span>
+          <span>
+            ISO <span id="iso-val">--</span> &bull; 
+            <span id="aperture-val">--</span> &bull; 
+            <span id="shutter-val">--</span>
+          </span>
         </div>
       </div>
 
@@ -45,12 +51,10 @@
     </nav>
 
     <main class="gallery-view">
-      <div class="gallery-track" id="track">
-        </div>
+      <div class="gallery-track" id="track"></div>
     </main>
 
     <script>
-      // --- Configuration ---
       const imageList = [
         "images/A.JPG", "images/A1.JPG", "images/A2.JPG", 
         "images/A3.JPG", "images/A4.JPG", "images/A5.JPG", 
@@ -62,76 +66,106 @@
       const currentSlideEl = document.getElementById('current-slide');
       const totalSlidesEl = document.getElementById('total-slides');
       const progressFill = document.getElementById('progress-fill');
-      const isoVal = document.getElementById('iso-val');
+      
+      // UI Elements for EXIF
+      const camModelEl = document.getElementById('cam-model');
+      const isoEl = document.getElementById('iso-val');
+      const apertureEl = document.getElementById('aperture-val');
+      const shutterEl = document.getElementById('shutter-val');
 
-      // 1. Initialize Gallery
       totalSlidesEl.innerText = imageList.length.toString().padStart(2, '0');
 
+      // 1. Build Gallery
       imageList.forEach((src, index) => {
         const wrapper = document.createElement('div');
         wrapper.className = 'image-wrapper';
         
         const img = document.createElement('img');
-        img.dataset.src = src; // Lazy load setup
-        img.alt = `Photography by Yash Patel ${index + 1}`;
-        img.className = index === 0 ? 'loaded' : '';
-        
-        // Load first image immediately
+        img.dataset.src = src;
+        img.alt = `Photo ${index + 1}`;
         if (index === 0) img.src = src;
 
         wrapper.appendChild(img);
         track.appendChild(wrapper);
       });
 
-      // 2. Observer for Lazy Loading & Counter Update
-      const observerOptions = {
-        root: track,
-        threshold: 0.5 // Trigger when 50% of image is visible
-      };
+      // 2. Function to Extract and Display EXIF
+      function updateExifData(imgElement) {
+        // Use the EXIF library
+        EXIF.getData(imgElement, function() {
+          // Extract tags
+          const model = EXIF.getTag(this, "Model");
+          const iso = EXIF.getTag(this, "ISOSpeedRatings");
+          const fNumber = EXIF.getTag(this, "FNumber");
+          const exposure = EXIF.getTag(this, "ExposureTime");
 
+          // Update DOM with Fallbacks
+          camModelEl.innerText = model ? model : "DIGITAL CAPTURE";
+          isoEl.innerText = iso ? iso : "--";
+          
+          // Format Aperture (e.g., 2.8 -> f/2.8)
+          apertureEl.innerText = fNumber ? `f/${fNumber}` : "--";
+
+          // Format Shutter Speed (Handle fractions if necessary)
+          if (exposure) {
+             // Sometimes it comes as a decimal (0.005), usually libraries handle fraction
+             // If it's a simple number < 1, we might want to convert to fraction manually
+             // But EXIF-JS usually returns the fraction object or string.
+             // We will cast to string for safety.
+             shutterEl.innerText = `${exposure.numerator}/${exposure.denominator}s`;
+          } else {
+             shutterEl.innerText = "--";
+          }
+          
+          // Add a glitch effect class to text to show it updated
+          document.querySelector('.camera-info').classList.add('flash-update');
+          setTimeout(() => document.querySelector('.camera-info').classList.remove('flash-update'), 300);
+        });
+      }
+
+      // 3. Observer
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             const img = entry.target.querySelector('img');
             const index = Array.from(track.children).indexOf(entry.target);
-            
+
             // Lazy Load
             if (img.dataset.src) {
               img.src = img.dataset.src;
               img.removeAttribute('data-src');
-              img.onload = () => img.classList.add('loaded');
+              img.onload = () => {
+                img.classList.add('loaded');
+                updateExifData(img); // Read EXIF once loaded
+              };
+            } else {
+              // If already loaded, just read EXIF
+              updateExifData(img);
             }
 
-            // Update Counter
+            // Update Counters
             currentSlideEl.innerText = (index + 1).toString().padStart(2, '0');
-            
-            // Update Progress Bar
             const progress = ((index + 1) / imageList.length) * 100;
             progressFill.style.width = `${progress}%`;
-
-            // Simulate Changing ISO for "Tech" feel
-            const randomISO = [100, 200, 400, 800, 1600, 3200];
-            isoVal.innerText = randomISO[Math.floor(Math.random() * randomISO.length)];
           }
         });
-      }, observerOptions);
+      }, { root: track, threshold: 0.6 });
 
       document.querySelectorAll('.image-wrapper').forEach(wrap => observer.observe(wrap));
 
-      // 3. Simple Clock
+      // Clock
       setInterval(() => {
         const now = new Date();
         document.getElementById('clock').innerText = now.toLocaleTimeString('en-US', { hour12: false });
       }, 1000);
 
-      // 4. Horizontal Scroll Wheel mapping (for vertical mice)
+      // Scroll
       track.addEventListener("wheel", (evt) => {
         if (evt.deltaY !== 0) {
           track.scrollLeft += evt.deltaY;
           evt.preventDefault();
         }
       });
-
     </script>
   </body>
 </html>
