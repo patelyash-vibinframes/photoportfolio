@@ -2,225 +2,136 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Yash Patel | Photography Portfolio</title>
+    <title>Yash Patel | Portfolio</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- bump version so phones grab new CSS -->
-    <link rel="stylesheet" href="style.css?v=7" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css?v=10" />
   </head>
   <body>
-    <!-- Blurred background that follows the current image -->
-    <div class="page-bg">
-      <img id="bg-image" alt="" />
-      <div class="bg-overlay"></div>
-    </div>
+    
+    <nav class="ui-layer">
+      <div class="corner top-left">
+        <h1>YASH PATEL</h1>
+        <span class="meta">ARCHIVE 2024–25</span>
+      </div>
 
-    <main class="layout">
-      <section class="hero">
-        <div class="hero-image-frame">
-          <!-- HORIZONTAL SCROLL REEL -->
-          <div class="image-reel" id="image-reel"></div>
+      <div class="corner top-right">
+        <a href="https://instagram.com/vibinframes" target="_blank" class="link-hover">@vibinframes ↗</a>
+        <div class="time-display" id="clock">00:00:00</div>
+      </div>
 
-          <!-- swipe / scroll hint -->
-          <div class="reel-hint">
-            <span class="reel-hint-text">Scroll / swipe</span>
-            <span class="reel-hint-arrow">→</span>
-          </div>
-
-          <!-- Left / right arrows -->
-          <button
-            class="reel-arrow reel-arrow-left"
-            type="button"
-            aria-label="Previous image"
-          >
-            ‹
-          </button>
-          <button
-            class="reel-arrow reel-arrow-right"
-            type="button"
-            aria-label="Next image"
-          >
-            ›
-          </button>
-
-          <!-- Name card -->
-          <div class="name-card">
-            <div class="name-card-header">
-              FUJIFILM X-T200 &bull; PIXEL 9 &bull; ONEPLUS 9R
-            </div>
-            <h1 class="name-title">YASH PATEL</h1>
-            <p class="name-tags">
-              STREET &bull; NIGHT &bull; PORTRAITS
-            </p>
-            <p class="name-sub">PHOTOGRAPHER</p>
-          </div>
-
-          <!-- About + contact card -->
-          <aside class="about-card">
-            <h2>ABOUT</h2>
-            <p>
-              Toronto-based hobbyist photographer.
-            </p>
-
-            <h3>CONTACT</h3>
-
-            <div class="contact-row">
-              <span class="icon" aria-hidden="true">
-                <!-- Instagram icon -->
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <rect x="3" y="3" width="18" height="18" rx="5" ry="5"></rect>
-                  <circle cx="12" cy="12" r="5"></circle>
-                  <circle cx="17.5" cy="6.5" r="1.5"></circle>
-                </svg>
-              </span>
-              <a
-                href="https://instagram.com/vibinframes"
-                target="_blank"
-                rel="noopener"
-              >
-                @vibinframes
-              </a>
-            </div>
-
-         
-          </aside>
-
-          <!-- Selected work bar -->
-          <button class="selected-bar" type="button">
-            <span class="dot"></span>
-            <span>SELECTED WORK &bull; 2024–2025</span>
-          </button>
+      <div class="corner bottom-left">
+        <div class="camera-info">
+          <span>CAM: FUJIFILM X-T200</span>
+          <span>LENS: 35MM F/2</span>
+          <span>ISO: <span id="iso-val">AUTO</span></span>
         </div>
-      </section>
+      </div>
+
+      <div class="corner bottom-right">
+        <div class="counter">
+          <span id="current-slide">01</span>
+          <span class="divider">/</span>
+          <span id="total-slides">10</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="gallery-view">
+      <div class="gallery-track" id="track">
+        </div>
     </main>
 
-    <!-- Scroll-based gallery: horizontal reel, no timer -->
-   <script>
-  // Your image list. Just add/remove lines here when you change photos.
-  const imagePaths = [
-    "images/A.JPG",
-    "images/A1.JPG",
-    "images/A2.JPG",
-    "images/A3.JPG",
-    "images/A4.JPG",
-    "images/A5.JPG",
-    "images/A6.JPG",
-    "images/A7.JPG",
-    "images/A8.JPG",
-    "images/B1.JPG",
+    <script>
+      // --- Configuration ---
+      const imageList = [
+        "images/A.JPG", "images/A1.JPG", "images/A2.JPG", 
+        "images/A3.JPG", "images/A4.JPG", "images/A5.JPG", 
+        "images/A6.JPG", "images/A7.JPG", "images/A8.JPG", 
+        "images/B1.JPG"
+      ];
 
-  ];
+      const track = document.getElementById('track');
+      const currentSlideEl = document.getElementById('current-slide');
+      const totalSlidesEl = document.getElementById('total-slides');
+      const progressFill = document.getElementById('progress-fill');
+      const isoVal = document.getElementById('iso-val');
 
-  const reel = document.getElementById("image-reel");
-  const bgImage = document.getElementById("bg-image");
-  const arrowLeft = document.querySelector(".reel-arrow-left");
-  const arrowRight = document.querySelector(".reel-arrow-right");
+      // 1. Initialize Gallery
+      totalSlidesEl.innerText = imageList.length.toString().padStart(2, '0');
 
-  if (reel && bgImage && imagePaths.length > 0) {
-    // --- Build the horizontal reel with lazy loading -------------------
-    imagePaths.forEach((src, index) => {
-      const img = document.createElement("img");
-      img.alt = `Photograph by Yash Patel ${index + 1}`;
-      img.className = "reel-image";
-      img.decoding = "async";
+      imageList.forEach((src, index) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'image-wrapper';
+        
+        const img = document.createElement('img');
+        img.dataset.src = src; // Lazy load setup
+        img.alt = `Photography by Yash Patel ${index + 1}`;
+        img.className = index === 0 ? 'loaded' : '';
+        
+        // Load first image immediately
+        if (index === 0) img.src = src;
 
-      // First image: load immediately
-      if (index === 0) {
-        img.src = src;
-        img.loading = "eager";
-      } else {
-        // Others: lazy load when scrolled into view
-        img.dataset.src = src;
-        img.loading = "lazy";
-      }
+        wrapper.appendChild(img);
+        track.appendChild(wrapper);
+      });
 
-      reel.appendChild(img);
-    });
+      // 2. Observer for Lazy Loading & Counter Update
+      const observerOptions = {
+        root: track,
+        threshold: 0.5 // Trigger when 50% of image is visible
+      };
 
-    const reelImages = Array.from(reel.querySelectorAll(".reel-image"));
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const img = entry.target.querySelector('img');
+            const index = Array.from(track.children).indexOf(entry.target);
+            
+            // Lazy Load
+            if (img.dataset.src) {
+              img.src = img.dataset.src;
+              img.removeAttribute('data-src');
+              img.onload = () => img.classList.add('loaded');
+            }
 
-    // Initial blurred background
-    bgImage.src = imagePaths[0];
-    bgImage.dataset.currentSrc = imagePaths[0];
+            // Update Counter
+            currentSlideEl.innerText = (index + 1).toString().padStart(2, '0');
+            
+            // Update Progress Bar
+            const progress = ((index + 1) / imageList.length) * 100;
+            progressFill.style.width = `${progress}%`;
 
-    // --- IntersectionObserver to swap data-src -> src when visible -----
-    const lazyObserver = new IntersectionObserver(
-      (entries, obs) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const img = entry.target;
-          if (!img.src && img.dataset.src) {
-            img.src = img.dataset.src;
-            img.removeAttribute("data-src");
+            // Simulate Changing ISO for "Tech" feel
+            const randomISO = [100, 200, 400, 800, 1600, 3200];
+            isoVal.innerText = randomISO[Math.floor(Math.random() * randomISO.length)];
           }
-          obs.unobserve(img);
         });
-      },
-      {
-        root: reel,          // watch inside the horizontal reel
-        threshold: 0.4,      // when ~40% of the image is in view
-      }
-    );
+      }, observerOptions);
 
-    reelImages.forEach((img, index) => {
-      if (index > 0 && img.dataset.src) {
-        lazyObserver.observe(img);
-      }
-    });
+      document.querySelectorAll('.image-wrapper').forEach(wrap => observer.observe(wrap));
 
-    // --- Background follows scroll ------------------------------------
-    function updateBackgroundFromScroll() {
-      const viewWidth = reel.clientWidth;
-      if (!viewWidth) return;
+      // 3. Simple Clock
+      setInterval(() => {
+        const now = new Date();
+        document.getElementById('clock').innerText = now.toLocaleTimeString('en-US', { hour12: false });
+      }, 1000);
 
-      const index = Math.round(reel.scrollLeft / viewWidth);
-      const clamped = Math.max(0, Math.min(imagePaths.length - 1, index));
-      const newSrc = imagePaths[clamped];
-
-      if (newSrc && bgImage.dataset.currentSrc !== newSrc) {
-        bgImage.src = newSrc;
-        bgImage.dataset.currentSrc = newSrc;
-      }
-    }
-
-    let rafId = null;
-    reel.addEventListener("scroll", () => {
-      if (rafId) return;
-      rafId = requestAnimationFrame(() => {
-        rafId = null;
-        updateBackgroundFromScroll();
-      });
-    });
-
-    // Convert vertical mouse wheel to horizontal scroll (desktop)
-    reel.addEventListener(
-      "wheel",
-      (event) => {
-        if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
-          event.preventDefault();
-          reel.scrollLeft += event.deltaY;
+      // 4. Horizontal Scroll Wheel mapping (for vertical mice)
+      track.addEventListener("wheel", (evt) => {
+        if (evt.deltaY !== 0) {
+          track.scrollLeft += evt.deltaY;
+          evt.preventDefault();
         }
-      },
-      { passive: false }
-    );
-
-    function scrollByOne(direction) {
-      const viewWidth = reel.clientWidth;
-      if (!viewWidth) return;
-      reel.scrollBy({
-        left: direction * viewWidth,
-        behavior: "smooth",
       });
-    }
 
-    if (arrowLeft) {
-      arrowLeft.addEventListener("click", () => scrollByOne(-1));
-    }
-
-    if (arrowRight) {
-      arrowRight.addEventListener("click", () => scrollByOne(1));
-    }
-  }
-</script>
+    </script>
   </body>
 </html>
